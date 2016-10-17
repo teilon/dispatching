@@ -1,0 +1,12 @@
+# folder logs
+logs/
+
+# debug files
+disp/bin
+
+# obj files
+disp/obj
+
+# packages
+packages/
+disp/packages.config
