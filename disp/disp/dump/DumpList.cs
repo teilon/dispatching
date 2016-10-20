@@ -123,14 +123,30 @@ namespace disp
             //double radius = 0.079162;
             double radius = 20;            
             bool result = false;
-            foreach (Line line in _excavators.Excavators)
-            {                   
+            foreach (Point excv in _excavators.Excavators.Values)
+            {
+                GeoLocation gl = new GeoLocation();
+                gl.SetLocation(excv.X, excv.Y, 0);
+                double _hypo = hypo(gl, point);
+                ToTXT(_hypo.ToString());
+                if (_hypo < radius)
+                {
+                    result = true;
+                }
+                /*
                 if (Geometry.Intersection(new Point(line.Points[0].Y, line.Points[0].X), new Point(point.Longitude, point.Latitude), radius))
                 {
                     result = true;
                 }
+                */
             }                
             return result;
+        }
+        double hypo(GeoLocation pointA, GeoLocation pointB)
+        {
+            double a = Math.Abs(pointA.Longitude - pointB.Longitude);
+            double b = Math.Abs(pointA.Latitude - pointB.Latitude);
+            return Math.Sqrt(a * a + b * b);
         }
         double hypo(Line line, GeoLocation point)
         {
@@ -153,10 +169,23 @@ namespace disp
             double radius = 20;
             foreach (Line line in _parkings.Parkings)
             {
+                foreach (Point p in line.Points)
+                {
+                    GeoLocation gl = new GeoLocation();
+                    gl.SetLocation(p.X, p.Y, 0);
+                    double _hypo = hypo(gl, point);   
+                    if (_hypo < radius)
+                    {
+                        return true;
+                    }
+                }
+
+                /*
                 if (Geometry.Intersection(new Point(line.Points[0].Y, line.Points[0].X), new Point(point.Longitude, point.Latitude), radius))
                 {
                     return true;
                 }
+                */
             }
             return false;
         }
@@ -164,17 +193,54 @@ namespace disp
         bool FindNearDepot(GeoLocation point)
         {
             //double radius = 0.079162;
-            double radius = 20;
+            double radius = 50;
             bool result = false;
             foreach (Line line in _depots.Depots)
-            {
+            {   
+                result = IsInside(new Point(line.Points[0].X, line.Points[0].Y), 
+                                  new Point(line.Points[1].X, line.Points[1].Y), 
+                                  new Point(line.Points[2].X, line.Points[2].Y), 
+                                  new Point(line.Points[3].X, line.Points[3].Y), 
+                                  new Point(point.Latitude, point.Longitude));
+                if (result)
+                    return result;
+                /*  
+                foreach (Point p in line.Points)
+                {
+                    GeoLocation gl = new GeoLocation();
+                    gl.SetLocation(p.X, p.Y, 0);
+                    double _hypo = hypo(gl, point);
+                    if (_hypo < radius)
+                    {
+                        return true;
+                    }
+                } 
+                */
+                /*
                 if (Geometry.Intersection(line, new Point(point.Latitude, point.Longitude), radius))
                 {
                     result = true;
-                }
+                } 
+                */
             }
             return result;
         }
+        public static double Area(Point a, Point b, Point c)
+        {
+            return ((b.X - a.X) * (c.Y - a.Y) - (c.X - a.X) * (b.Y - a.Y));
+        }
+        public Boolean IsInside(Point v1, Point v2, Point v3, Point v4, Point test)
+        {
+            bool a, b, c, d;
+
+            a = Area(test, v1, v2) < 0.0 ? true : false;
+            b = Area(test, v2, v3) < 0.0 ? true : false;
+            c = Area(test, v3, v4) < 0.0 ? true : false;
+            d = Area(test, v4, v1) < 0.0 ? true : false;
+            return ((a == b) && (a == c) && (a == d));
+        }
+
+
         class DepotRound
         {
             double Latitude;

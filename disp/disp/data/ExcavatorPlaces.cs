@@ -12,16 +12,22 @@ namespace disp
     {
         Dictionary<string, Point> _places;
 
-        List<Line> _excavators;
-        public List<Line> Excavators { get { return _excavators; } }
+        //List<Line> _excavators;
+        //public List<Line> Excavators { get { return _excavators; } }
+        public Dictionary<string, Point> Excavators { get { return _places; } }
+
         public ExcavatorPlaces()
         {
+            /*
             string fileName = @"C:/mok/excv.json";
             if (!File.Exists(fileName))
                 return;
+                */
             _places = new Dictionary<string, Point>();
+            //_excavators = new List<Line>();
+            /*
             List<ExcavatorPlace> list = JSONExcavator.OpenJson(fileName);
-            _excavators = new List<Line>();
+            
             foreach (ExcavatorPlace tm in list)
             {
                 Line line = new Line();
@@ -33,9 +39,18 @@ namespace disp
                 }
                 _excavators.Add(line);
             }
+            */
+        }
+        public void AddExcavatorPlace(string imei, Point point)
+        {
+            if (_places.ContainsKey(imei))
+                _places[imei] = point;
+            else
+                _places.Add(imei, point);
+
         }
     }
-
+    /*
     public static class JSONExcavator
     {
         static public List<ExcavatorPlace> OpenJson(string fileName)
@@ -50,6 +65,7 @@ namespace disp
             return items;
         }
     }
+    */
     public class ExcavatorPlace
     {
         public string Imei;

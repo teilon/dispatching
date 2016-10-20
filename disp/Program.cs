@@ -67,8 +67,8 @@ namespace disp
                                             Convert.ToDateTime("10.09.2016 19:30:00"),
                                             Convert.ToDateTime("17.09.2016 19:30:00"));
 
-            int i = 0;
-            int n = 0;
+            //int i = 0;
+            //int n = 0;
 
             Regex regex = new Regex(@".{4}$");
             string _imei = "";

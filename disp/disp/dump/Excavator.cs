@@ -20,8 +20,9 @@ namespace disp
             IsDepot = isdepot;
         }
         protected override string EventHandler(DumpMessage msg)
-        {
-            Location.SetLocation(msg.Location.Latitude, msg.Location.Longitude, msg.Location.Altitude);
+        {   
+            Location.SetLocation(msg.Location.Latitude, msg.Location.Longitude, msg.Location.Altitude);            
+
             msg.State = "NN";
             return "NN";
         }                                              

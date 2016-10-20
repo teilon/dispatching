@@ -17,8 +17,9 @@ namespace disp
 
         bool _startEvent = false;
         DateTime startTime = default(DateTime);
-        TimeSpan ts = new TimeSpan(0, 3, 0);
-                            
+        TimeSpan ts_load = new TimeSpan(0, 3, 0);
+        TimeSpan ts_unload = new TimeSpan(0, 1, 30);
+
         bool _start;
         int _count;
 
@@ -30,7 +31,7 @@ namespace disp
             :base(imei)
         {
             _tod = TypeOfDump.Dumptruck;
-            _state = DumpStatus.Instance;
+            _state = new DumpStatus();
             //
             _start = false;   
         }
@@ -41,14 +42,16 @@ namespace disp
 
             if (FindNearExcavator(Location))
             {
-                if(_startEvent)
-                    if(msg.Datetime - startTime > ts)   //todo: < or >
+                _state.OnExcavator();
+                /*
+                if (_startEvent)
+                    if(msg.Datetime - startTime > ts_load)   //todo: < or >
                     {
                         _state.OnExcavator();
                         _start = true;
                         if (_firstLoad)
                         {
-                            saveLoading(msg.Datetime - ts);
+                            //saveLoading(msg.Datetime - ts);
                             _firstLoad = false;                            
                         }
                         //ActionLine.Add(new DumpAction(msg.Datetime, Location, "LL"));
@@ -61,18 +64,21 @@ namespace disp
                     startTime = msg.Datetime;
                     _startEvent = true;
                     _state.OnRoad();//todo: event is sub-load
-                }                     
+                }
+                */                     
             }                                        
             else if (FindNearParking(Location))
             {
-                _state.OnRoad();
-                //_state.OnParking();
+                //_state.OnRoad();
+                _state.OnParking();
                 //ActionLine.Add(new DumpAction(msg.Datetime, Location, "PP"));
             }                                      
             else if (FindNearDepot(Location))
             {
+                _state.OnDepot();
+                /*
                 if (_startEvent)
-                    if (msg.Datetime - startTime > ts)
+                    if (msg.Datetime - startTime > ts_unload)
                     {
                         _state.OnDepot();
                         //ActionLine.Add(new DumpAction(msg.Datetime, Location, "UU"));
@@ -80,7 +86,7 @@ namespace disp
                         {
                             _count++;
                             _start = false;
-                            saveUnloading(msg.Datetime);
+                            //saveUnloading(msg.Datetime);
                         }
                     }else
                     {                                              
@@ -92,19 +98,19 @@ namespace disp
                     _startEvent = true;
                     _state.OnRoad();//todo: event is sub-unload
                 }
-                    
+                */                     
             }
             else
             {
-                if (_state.Current == "LL")
-                    saveEndLoading(startTime, msg.Datetime);
-                if (_state.Current == "UU")
-                    saveEndUnloading(startTime, msg.Datetime);
+                //if (_state.Current == "LL")
+                    //saveEndLoading(startTime, msg.Datetime);
+                //if (_state.Current == "UU")
+                    //saveEndUnloading(startTime, msg.Datetime);
 
                 _state.OnRoad();
                 //ActionLine.Add(new DumpAction(msg.Datetime, Location, "MM"));
-                _startEvent = false;
-                _firstLoad = true;
+                //_startEvent = false;
+                //_firstLoad = true;
             }
             msg.State = _state.Current;
             return msg.State.ToString();               

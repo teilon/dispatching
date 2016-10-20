@@ -11,8 +11,8 @@ namespace disp
 {
     static class DBConst
     {
-        public static string ConnectionString = @"Data Source=10.8.0.4;Initial Catalog=docflow3;Persist Security Info=True;User ID=sa;Password=123123qwE";
-        //public static string ConnectionString = @"Data Source=192.168.0.101;Initial Catalog=docflow3;Persist Security Info=True;User ID=sa;Password=@qwerty123";
+        //public static string ConnectionString = @"Data Source=10.8.0.4;Initial Catalog=docflow3;Persist Security Info=True;User ID=sa;Password=123123qwE";
+        public static string ConnectionString = @"Data Source=192.168.0.101;Initial Catalog=docflow3;Persist Security Info=True;User ID=sa;Password=@qwerty123";
     }
     public static class Geometry
     {
