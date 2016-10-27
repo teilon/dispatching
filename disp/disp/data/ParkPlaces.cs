@@ -27,7 +27,7 @@ namespace disp
                 Line line = new Line();
                 foreach (Point p in tm.Points)
                 {
-                    GEOCoordinate coord = new GEOCoordinate(ConvertCoordinate.getLatitudeInGradus(p.Y), ConvertCoordinate.getLongitudeInGradus(p.X));
+                    GEOCoordinate coord = new GEOCoordinate(p.Y, p.X);
                     coord.TransferToUTM();
                     line.Points.Add(new Point(coord.X, coord.Y));
                 }
@@ -53,6 +53,7 @@ namespace disp
     public class ParkPlace
     {
         public string Imei;
+        public string Type;
         public List<Point> Points;
     }
 }

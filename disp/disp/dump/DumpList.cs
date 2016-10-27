@@ -121,7 +121,7 @@ namespace disp
         bool FindNearExcavator(GeoLocation point)
         {
             //double radius = 0.079162;
-            double radius = 20;            
+            double radius = 45;            
             bool result = false;
             foreach (Point excv in _excavators.Excavators.Values)
             {
@@ -166,6 +166,7 @@ namespace disp
         bool FindNearParking(GeoLocation point)
         {            
             //double radius = 0.029162;
+            /*
             double radius = 20;
             foreach (Line line in _parkings.Parkings)
             {
@@ -179,6 +180,18 @@ namespace disp
                         return true;
                     }
                 }
+            double radius = 50;
+            */
+            bool result = false;
+            foreach (Line line in _parkings.Parkings)
+            {   
+                result = IsInside(new Point(line.Points[0].X, line.Points[0].Y), 
+                                  new Point(line.Points[1].X, line.Points[1].Y), 
+                                  new Point(line.Points[2].X, line.Points[2].Y), 
+                                  new Point(line.Points[3].X, line.Points[3].Y), 
+                                  new Point(point.Latitude, point.Longitude));
+                if (result)
+                    return result;
 
                 /*
                 if (Geometry.Intersection(new Point(line.Points[0].Y, line.Points[0].X), new Point(point.Longitude, point.Latitude), radius))
@@ -187,7 +200,7 @@ namespace disp
                 }
                 */
             }
-            return false;
+            return result;
         }
 
         bool FindNearDepot(GeoLocation point)

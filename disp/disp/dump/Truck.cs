@@ -39,9 +39,9 @@ namespace disp
         protected override string EventHandler(DumpMessage msg)
         {
             Location.SetLocation(msg.Location.Latitude, msg.Location.Longitude, msg.Location.Altitude);
-
-            if (FindNearExcavator(Location))
-            {
+            bool checkSpeed = msg.SpeedKPH == 0;
+            if (FindNearExcavator(Location) && checkSpeed)
+            {                   
                 _state.OnExcavator();
                 /*
                 if (_startEvent)
@@ -67,13 +67,13 @@ namespace disp
                 }
                 */                     
             }                                        
-            else if (FindNearParking(Location))
+            else if (FindNearParking(Location) && checkSpeed)
             {
                 //_state.OnRoad();
                 _state.OnParking();
                 //ActionLine.Add(new DumpAction(msg.Datetime, Location, "PP"));
             }                                      
-            else if (FindNearDepot(Location))
+            else if (FindNearDepot(Location) && checkSpeed)
             {
                 _state.OnDepot();
                 /*
@@ -103,17 +103,17 @@ namespace disp
             else
             {
                 //if (_state.Current == "LL")
-                    //saveEndLoading(startTime, msg.Datetime);
+                //saveEndLoading(startTime, msg.Datetime);
                 //if (_state.Current == "UU")
-                    //saveEndUnloading(startTime, msg.Datetime);
-
-                _state.OnRoad();
+                //saveEndUnloading(startTime, msg.Datetime);
+                if (!checkSpeed)    
+                    _state.OnRoad();
                 //ActionLine.Add(new DumpAction(msg.Datetime, Location, "MM"));
                 //_startEvent = false;
                 //_firstLoad = true;
             }
             msg.State = _state.Current;
-            return msg.State.ToString();               
+            return msg.State.ToString();
         }
 
 

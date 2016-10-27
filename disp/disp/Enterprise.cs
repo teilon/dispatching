@@ -35,6 +35,42 @@ namespace disp
             return reg.Match(message).Value;                       
         }
 
+        public string AddMessage(string imei, double latitude, double longitude, DateTime datetime, int speedKPH)
+        {
+            //DumpMessageTemp _msg = JsonConvert.DeserializeObject<DumpMessageTemp>(message);
+            //DumpMessage msg = DumpMessageFabric(_msg);
+
+            DumpMessage msg = new DumpMessage()
+            {
+                Imei = imei,
+                Location = new Location()
+                {
+                    Latitude = latitude,
+                    Longitude = longitude,
+                    Altitude = 0
+                },
+                Datetime = datetime,//DateTime.Now,
+                State = "",
+                SpeedKPH = speedKPH
+            };
+
+            TransferCoordinate _tc = new TransferCoordinate(msg.Location.Latitude, msg.Location.Longitude);
+            msg.Location.Latitude = _tc.X;
+            msg.Location.Longitude = _tc.Y;
+
+            string _imei = new Regex(@".{4}$").Match(msg.Imei).Value;
+            //string imei = msg.Imei;                                                
+            if (Dumps.IsExist(_imei))//todo: PARK CHANGE
+            {
+                if (Dumps[_imei].Tod == TypeOfDump.Excavator)
+                    if (_imei == "3915" || _imei == "2009" || _imei == "3877" || _imei == "3107" || _imei == "6330" || _imei == "1648" || _imei == "7085")
+                        ExcavatorPlaces.AddExcavatorPlace(_imei, new Point(msg.Location.Latitude, msg.Location.Longitude));
+                return Dumps[_imei].AddMessage(msg);
+            }
+
+            return "NH";
+        }
+
         public string AddMessage(string imei, double latitude, double longitude, DateTime datetime)
         {
             //DumpMessageTemp _msg = JsonConvert.DeserializeObject<DumpMessageTemp>(message);
@@ -50,7 +86,8 @@ namespace disp
                     Altitude = 0
                 },
                 Datetime = datetime,//DateTime.Now,
-                State = ""
+                State = "",
+                SpeedKPH = 0
             };
 
             TransferCoordinate _tc = new TransferCoordinate(msg.Location.Latitude, msg.Location.Longitude);
@@ -112,7 +149,8 @@ namespace disp
         public string Imei;
         public Location Location;
         public DateTime Datetime;
-        public string State;        
+        public string State;
+        public int SpeedKPH;        
     }   
     public class Location
     {
