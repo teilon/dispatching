@@ -36,10 +36,7 @@ namespace disp
         }
 
         public string AddMessage(string imei, double latitude, double longitude, DateTime datetime, int speedKPH)
-        {
-            //DumpMessageTemp _msg = JsonConvert.DeserializeObject<DumpMessageTemp>(message);
-            //DumpMessage msg = DumpMessageFabric(_msg);
-
+        {                                                
             DumpMessage msg = new DumpMessage()
             {
                 Imei = imei,
@@ -72,10 +69,7 @@ namespace disp
         }
 
         public string AddMessage(string imei, double latitude, double longitude, DateTime datetime)
-        {
-            //DumpMessageTemp _msg = JsonConvert.DeserializeObject<DumpMessageTemp>(message);
-            //DumpMessage msg = DumpMessageFabric(_msg);
-
+        {                                                
             DumpMessage msg = new DumpMessage()
             {
                 Imei = imei,
