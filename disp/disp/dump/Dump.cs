@@ -1,4 +1,5 @@
-﻿using System;
+﻿using stateMachine;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +16,8 @@ namespace disp
         protected TypeOfDump _tod;
         protected string _parkNumber;
 
-        protected ActionLine ActionLine;        
+        protected ActionLine ActionLine;
+        protected DumpStatus _state;
         #endregion
 
         public string Imei { get { return _imei; } }

@@ -68,6 +68,7 @@ namespace disp
             return "NH";
         }
 
+        #region appendix
         public string AddMessage(string imei, double latitude, double longitude, DateTime datetime)
         {                                                
             DumpMessage msg = new DumpMessage()
@@ -128,6 +129,13 @@ namespace disp
                 Datetime = new DateTime(tmp.Datetime),
                 State = tmp.State
             };
+        }
+
+        #endregion
+
+        public void SaveMessage(string imei, string state, DateTime datetime)
+        {
+            //todo: save to db
         }
     }
 

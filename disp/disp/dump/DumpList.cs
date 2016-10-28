@@ -132,13 +132,7 @@ namespace disp
                 if (_hypo < radius)
                 {
                     result = true;
-                }
-                /*
-                if (Geometry.Intersection(new Point(line.Points[0].Y, line.Points[0].X), new Point(point.Longitude, point.Latitude), radius))
-                {
-                    result = true;
-                }
-                */
+                }                  
             }                
             return result;
         }
@@ -154,6 +148,7 @@ namespace disp
             double b = Math.Abs(line.Points[0].Y - point.Latitude);
             return Math.Sqrt(a * a + b * b);
         }
+
         void ToTXT(string s)
         {
             using (FileStream file = new FileStream("02.txt", FileMode.Append, FileAccess.Write, FileShare.Read))
@@ -164,24 +159,7 @@ namespace disp
         }
 
         bool FindNearParking(GeoLocation point)
-        {            
-            //double radius = 0.029162;
-            /*
-            double radius = 20;
-            foreach (Line line in _parkings.Parkings)
-            {
-                foreach (Point p in line.Points)
-                {
-                    GeoLocation gl = new GeoLocation();
-                    gl.SetLocation(p.X, p.Y, 0);
-                    double _hypo = hypo(gl, point);   
-                    if (_hypo < radius)
-                    {
-                        return true;
-                    }
-                }
-            double radius = 50;
-            */
+        {       
             bool result = false;
             foreach (Line line in _parkings.Parkings)
             {   
@@ -192,21 +170,12 @@ namespace disp
                                   new Point(point.Latitude, point.Longitude));
                 if (result)
                     return result;
-
-                /*
-                if (Geometry.Intersection(new Point(line.Points[0].Y, line.Points[0].X), new Point(point.Longitude, point.Latitude), radius))
-                {
-                    return true;
-                }
-                */
             }
             return result;
         }
 
         bool FindNearDepot(GeoLocation point)
-        {
-            //double radius = 0.079162;
-            double radius = 50;
+        {                                       
             bool result = false;
             foreach (Line line in _depots.Depots)
             {   
@@ -217,31 +186,15 @@ namespace disp
                                   new Point(point.Latitude, point.Longitude));
                 if (result)
                     return result;
-                /*  
-                foreach (Point p in line.Points)
-                {
-                    GeoLocation gl = new GeoLocation();
-                    gl.SetLocation(p.X, p.Y, 0);
-                    double _hypo = hypo(gl, point);
-                    if (_hypo < radius)
-                    {
-                        return true;
-                    }
-                } 
-                */
-                /*
-                if (Geometry.Intersection(line, new Point(point.Latitude, point.Longitude), radius))
-                {
-                    result = true;
-                } 
-                */
             }
             return result;
         }
+
         public static double Area(Point a, Point b, Point c)
         {
             return ((b.X - a.X) * (c.Y - a.Y) - (c.X - a.X) * (b.Y - a.Y));
         }
+
         public Boolean IsInside(Point v1, Point v2, Point v3, Point v4, Point test)
         {
             bool a, b, c, d;

@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ConsoleApplication1</RootNamespace>
     <AssemblyName>disp</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <TargetFrameworkProfile />
@@ -41,7 +41,7 @@
       <HintPath>..\..\..\temp\LibGraphMSSQL\BaseGraph\BaseGraph\bin\Debug\BaseGraph.dll</HintPath>
     </Reference>
     <Reference Include="Dapper, Version=1.50.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Dapper.1.50.2\lib\net451\Dapper.dll</HintPath>
+      <HintPath>packages\Dapper.1.50.2\lib\net45\Dapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -66,6 +66,7 @@
     <Compile Include="disp\data\ExcavatorPlaces.cs" />
     <Compile Include="disp\data\Geometry.cs" />
     <Compile Include="disp\data\TransferToUTM.cs" />
+    <Compile Include="disp\db\dbMethods.cs" />
     <Compile Include="disp\dump\DumpList.cs" />
     <Compile Include="disp\data\ParkPlaces.cs" />
     <Compile Include="disp\event\ActionLine.cs" />
@@ -76,16 +77,17 @@
     <Compile Include="disp\dump\TypeOfDump.cs" />
     <Compile Include="disp\Enterprise.cs" />
     <Compile Include="disp\Utils.cs" />
-    <Compile Include="db\DynamicQuery.cs" />
+    <Compile Include="db[dapper]\DynamicQuery.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="db\QueryHelper.cs" />
-    <Compile Include="db\SqlConnectionFactory.cs" />
+    <Compile Include="db[dapper]\QueryHelper.cs" />
+    <Compile Include="db[dapper]\SqlConnectionFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
