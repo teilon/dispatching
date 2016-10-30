@@ -15,35 +15,32 @@ namespace disp
         public Func<GeoLocation, bool> FindNearDepot;
         //protected DumpStatus _state;
 
-        bool _startEvent = false;
-        DateTime startTime = default(DateTime);
-        TimeSpan ts_load = new TimeSpan(0, 3, 0);
-        TimeSpan ts_unload = new TimeSpan(0, 1, 30);
-
-        bool _start;
-        int _count;
-
-        bool _firstLoad = true;
-
-        public int Count { get { return _count; } }
-
         public Truck(string imei)
             :base(imei)
         {
             _tod = TypeOfDump.Dumptruck;
-            _state = new DumpStatus();
-            //
-            _start = false;   
+            _state = new DumpStatus(); 
         }
 
+
+        bool _firstEvent = false;
+        bool _event = false; //false-load true-unload
+        DateTime _starttime = default(DateTime);
         protected override string EventHandler(DumpMessage msg)
         {
             Location.SetLocation(msg.Location.Latitude, msg.Location.Longitude, msg.Location.Altitude);
-            bool checkSpeed = msg.SpeedKPH == 0;
+            bool checkSpeed = msg.SpeedKPH == 0;         
             if (FindNearExcavator(Location) && checkSpeed)
             {                   
                 _state.OnExcavator();
-                                   
+                if (!_firstEvent && _state.Current == "LL")
+                {
+                    _starttime = msg.Datetime;
+                    dbMethods.saveLoading(this.Imei, _starttime);
+                    _firstEvent = true;
+                    _event = false;
+                }
+                    
             }
             else if (FindNearParking(Location) && checkSpeed)
             {                                   
@@ -51,12 +48,33 @@ namespace disp
             }                                      
             else if (FindNearDepot(Location) && checkSpeed)
             {
-                _state.OnDepot();                       
+                _state.OnDepot();
+                if (!_firstEvent && _state.Current == "UU")
+                {
+                    _starttime = msg.Datetime;
+                    dbMethods.saveUnloading(this.Imei, _starttime);
+                    _firstEvent = true;
+                    _event = true;
+                }                       
             }
             else
-            {    
-                if (!checkSpeed)    
-                    _state.OnRoad();  
+            {                   
+                if (!checkSpeed)
+                {
+                    _state.OnRoad();
+                    if (_firstEvent)
+                    {
+                        if (!_event)
+                        {
+                            dbMethods.saveEndLoading(this.Imei, _starttime, msg.Datetime);
+                        }
+                        else
+                        {
+                            dbMethods.saveEndUnloading(this.Imei, _starttime, msg.Datetime);
+                        }
+                        _firstEvent = false;
+                    }
+                }                       
             }
             ActionLine.Add(new DumpAction(msg.Datetime, Location, _state.Current));
             msg.State = _state.Current;

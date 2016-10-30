@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace disp
 {
-    class dbMethods
+    public static class dbMethods
     {
-        void saveLoading(string imei, DateTime datetime)
+        public static void saveLoading(string imei, DateTime datetime)
         {
-            string table = "dbo.Trip";
+            string table = "dbo.MSTrip";
             using (IDbConnection con = new SqlConnectionFactory().Create())
             {
                 long check = 20;
@@ -26,9 +26,9 @@ namespace disp
                 });
             }
         }
-        void saveEndLoading(string imei, DateTime startTime, DateTime datetime)
+        public static void saveEndLoading(string imei, DateTime startTime, DateTime datetime)
         {
-            string table = "dbo.Trip";
+            string table = "dbo.MSTrip";
             using (IDbConnection con = new SqlConnectionFactory().Create())
             {
                 con.ExecUpdate(table, new
@@ -40,9 +40,9 @@ namespace disp
 
             }
         }
-        void saveUnloading(string imei, DateTime datetime)
+        public static void saveUnloading(string imei, DateTime datetime)
         {
-            string table = "dbo.Trip";
+            string table = "dbo.MSTrip";
             using (IDbConnection con = new SqlConnectionFactory().Create())
             {
                 long check = 20;
@@ -57,9 +57,9 @@ namespace disp
                 });
             }
         }
-        void saveEndUnloading(string imei, DateTime startTime, DateTime datetime)
+        public static void saveEndUnloading(string imei, DateTime startTime, DateTime datetime)
         {
-            string table = "dbo.Trip";
+            string table = "dbo.MSTrip";
             using (IDbConnection con = new SqlConnectionFactory().Create())
             {
                 con.ExecUpdate(table, new
