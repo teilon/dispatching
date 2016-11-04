@@ -10,8 +10,8 @@ namespace disp
 {
     public class DepotPlaces
     {
-        List<Line> _depots;
-        public List<Line> Depots { get { return _depots; } }
+        List<Line> _places;
+        public List<Line> Depots { get { return _places; } }
                 
         public DepotPlaces()
         { 
@@ -20,17 +20,20 @@ namespace disp
                 return;                   
             List<DepotPlace> list = JSONDepot.OpenJson(fileName);
                   
-            _depots = new List<Line>();
+            _places = new List<Line>();
             foreach (DepotPlace tm in list)
             {
                 Line line = new Line();
-                foreach (Point p in tm.Points)
+                if(tm.Type == "dept")
                 {
-                    GEOCoordinate coord = new GEOCoordinate(p.Y, p.X);
-                    coord.TransferToUTM();
-                    line.Points.Add(new Point(coord.X, coord.Y));
-                }
-                _depots.Add(line);
+                    foreach (Point p in tm.Points)
+                    {
+                        //GEOCoordinate coord = new GEOCoordinate(p.Y, p.X);
+                        //coord.TransferToUTM();
+                        line.Points.Add(new Point(p.X, p.Y));
+                    }
+                    _places.Add(line);
+                }                
             }
         }
     }

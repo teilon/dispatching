@@ -1,5 +1,7 @@
-﻿using System;
+﻿using stateMachine;
+using System;
 using System.Collections.Generic;
+using System.Device.Location;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,23 +10,58 @@ namespace disp
 {
     public class Excavator : Dump
     {
+        public Func<GeoCoordinate, bool> SearchTruck;
+
         public bool IsDepot;
         public Excavator(string imei)
             : base(imei)
         {
-            _tod = TypeOfDump.Excavator;
+            _tod = TypeOfDump.Excavator;                     
+            _state = new DumpStatus(stateMachine.Dump.Excavator);
         }
         public Excavator(string imei, bool isdepot)
             : this(imei)
         {
             IsDepot = isdepot;
         }
+        bool _firstEvent = false;
+        DateTime _starttime = default(DateTime);
         protected override string EventHandler(DumpMessage msg)
-        {   
-            Location.SetLocation(msg.Location.Latitude, msg.Location.Longitude, msg.Location.Altitude);            
+        {                                                                                                 
+            SetLocation(msg.Location);
+            bool checkSpeed = msg.Location.Speed == 0;
 
-            msg.State = "NN";
-            return "NN";
-        }                                              
+            if (SearchTruck(Location))
+            {
+                _state.ToLoading();
+                if (!_firstEvent && _state.Current == "LL")
+                {
+                    _starttime = msg.Datetime;
+                    dbMethods.saveExcavatorLoading(this.Imei, _starttime);
+                    _firstEvent = true;  
+                }
+            }
+            else if (!checkSpeed)
+            {
+                _state.OnRoad();
+                if (_firstEvent)
+                {
+                    dbMethods.saveEndExcavatorLoading(this.Imei, _starttime, msg.Datetime);      
+                    _firstEvent = false;
+                }
+            }
+            else
+            {
+                _state.Stop();
+                if (_firstEvent)
+                {
+                    dbMethods.saveEndExcavatorLoading(this.Imei, _starttime, msg.Datetime);      
+                    _firstEvent = false;
+                }
+            }
+
+            msg.State = _state.Current;
+            return msg.State;
+        }   
     }
 }

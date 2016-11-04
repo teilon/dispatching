@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Device.Location;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -26,49 +27,62 @@ namespace disp
             ExcavatorPlaces = new ExcavatorPlaces();
             ParkPlaces = new ParkPlaces();
             Dumps = new DumpList(fileName, DepotPlaces, ExcavatorPlaces, ParkPlaces); 
-        }
-
-        string GetImeiFromMessage(string message)
-        {                                                                 
-            string pattern = @"((?<=Imei:)\w{8})";              
-            Regex reg = new Regex(pattern);                     
-            return reg.Match(message).Value;                       
-        }
+        }                   
 
         public string AddMessage(string imei, double latitude, double longitude, DateTime datetime, int speedKPH)
-        {                                                
+        {
             DumpMessage msg = new DumpMessage()
             {
                 Imei = imei,
-                Location = new Location()
-                {
-                    Latitude = latitude,
-                    Longitude = longitude,
-                    Altitude = 0
-                },
-                Datetime = datetime,//DateTime.Now,
-                State = "",
-                SpeedKPH = speedKPH
+                Location = new GeoCoordinate(latitude, longitude, 0, 0, 0, (double)speedKPH, 0),                
+                Datetime = datetime,
+                State = "",         
             };
 
+            /*
             TransferCoordinate _tc = new TransferCoordinate(msg.Location.Latitude, msg.Location.Longitude);
             msg.Location.Latitude = _tc.X;
             msg.Location.Longitude = _tc.Y;
+            */
 
-            string _imei = new Regex(@".{4}$").Match(msg.Imei).Value;
-            //string imei = msg.Imei;                                                
+            //string _imei = new Regex(@".{4}$").Match(msg.Imei).Value;
+            string _imei = msg.Imei;                                                
             if (Dumps.IsExist(_imei))//todo: PARK CHANGE
             {
                 if (Dumps[_imei].Tod == TypeOfDump.Excavator)
-                    if (_imei == "3915" || _imei == "2009" || _imei == "3877" || _imei == "3107" || _imei == "6330" || _imei == "1648" || _imei == "7085")
-                        ExcavatorPlaces.AddExcavatorPlace(_imei, new Point(msg.Location.Latitude, msg.Location.Longitude));
-                return Dumps[_imei].AddMessage(msg);
+                    if (_imei == "354868053063915" ||         //134
+                        _imei == "354868056852009" ||         //157
+                        _imei == "354868054433877" ||         //125
+                        _imei == "354868053058196" ||         //13
+                        _imei == "354868056817085" ||         //70
+                        _imei == "354868052961648" ||         //39
+                        _imei == "354868053063956")           //66
+                        ExcavatorPlaces.AddExcavatorPlace(_imei, msg.Location);
+                string currentstate = Dumps[_imei].AddMessage(msg);
+                /*
+                if (Dumps[_imei].Tod == TypeOfDump.Dumptruck && currentstate == "LL")
+                {                                                                  
+                    foreach(Dump excv in Dumps.Dumps.Where(x => x.Tod == TypeOfDump.Excavator))
+                    {
+                        AddMessage(excv.Imei, excv.Location.Latitude, excv.Location.Longitude, msg.Datetime);
+                    }
+                }
+                */
+                return currentstate;
             }
 
             return "NH";
         }
 
         #region appendix
+        /*
+        string GetImeiFromMessage(string message)
+        {
+            string pattern = @"((?<=Imei:)\w{8})";
+            Regex reg = new Regex(pattern);
+            return reg.Match(message).Value;
+        }
+
         public string AddMessage(string imei, double latitude, double longitude, DateTime datetime)
         {                                                
             DumpMessage msg = new DumpMessage()
@@ -95,7 +109,7 @@ namespace disp
             {
                 if (Dumps[_imei].Tod == TypeOfDump.Excavator)
                     if(_imei == "3915" || _imei == "2009" || _imei == "3877" || _imei == "3107" || _imei == "6330")
-                        ExcavatorPlaces.AddExcavatorPlace(_imei, new Point(msg.Location.Latitude, msg.Location.Longitude));
+                        ExcavatorPlaces.AddExcavatorPlace(_imei, new GeoCoordinate(msg.Location.Latitude, msg.Location.Longitude));
                 return Dumps[_imei].AddMessage(msg);
             }
                 
@@ -130,34 +144,23 @@ namespace disp
                 State = tmp.State
             };
         }
-
+        public class DumpMessageTemp
+        {
+            public string Imei;
+            public Location Location;
+            public long Datetime;
+            public string State;
+        }
+        */
         #endregion
 
-        public void SaveMessage(string imei, string state, DateTime datetime)
-        {
-            //todo: save to db
-        }
-    }
+    }            
 
-    public class DumpMessageTemp
-    {
-        public string Imei;
-        public Location Location;
-        public long Datetime;
-        public string State;
-    }
     public class DumpMessage
     {
         public string Imei;
-        public Location Location;
+        public GeoCoordinate Location;
         public DateTime Datetime;
-        public string State;
-        public int SpeedKPH;        
-    }   
-    public class Location
-    {
-        public double Longitude;
-        public double Latitude;
-        public double Altitude;
-    }
+        public string State;        
+    }                       
 }

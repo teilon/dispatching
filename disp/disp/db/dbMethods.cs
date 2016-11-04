@@ -9,6 +9,37 @@ namespace disp
 {
     public static class dbMethods
     {
+        public static void saveExcavatorLoading(string imei, DateTime datetime)
+        {
+            string table = "dbo.MSTrip";
+            using (IDbConnection con = new SqlConnectionFactory().Create())
+            {
+                long check = 20;
+
+                check = con.ExecInsert(table, new
+                {
+                    transporterDeviceID = imei,
+                    eventTypeID = 54,
+                    volume_m3 = 130 / 3,
+                    weight_kg = 130,
+                    startTime = datetime
+                });
+            }
+        }
+        public static void saveEndExcavatorLoading(string imei, DateTime startTime, DateTime datetime)
+        {
+            string table = "dbo.MSTrip";
+            using (IDbConnection con = new SqlConnectionFactory().Create())
+            {
+                con.ExecUpdate(table, new
+                {
+                    transporterDeviceID = imei,
+                    startTime = startTime,
+                    endTime = datetime
+                });
+
+            }
+        }
         public static void saveLoading(string imei, DateTime datetime)
         {
             string table = "dbo.MSTrip";

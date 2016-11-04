@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Device.Location;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,8 @@ namespace disp
 {
     public class DumpList
     {
+        const double EXCAVATORRADIUS = 45;
+
         public List<Dump> Dumps;
         DepotPlaces _depots;
         ExcavatorPlaces _excavators;
@@ -92,6 +95,8 @@ namespace disp
             if (!IsExist(TypeOfDump.Excavator, imei))
             {
                 Dumps.Add(new Excavator(imei, isdepot));
+                Excavator dump = (Excavator)Dumps.Last();
+                dump.SearchTruck = SearchTruck;
                 return Dumps.Last();
             }
             return null;                
@@ -106,6 +111,7 @@ namespace disp
         }
         public bool IsExist(string imei)
         {
+            //return (Dumps.Where(x => x.Imei == imei)) != null;
             foreach (Dump d in Dumps)
                 if (d.Imei == imei)
                     return true;
@@ -114,28 +120,19 @@ namespace disp
         public void RemoveDump(int index)
         {
             Dumps.Remove(Dumps[index]);
+        }      
+
+        bool FindNearExcavator(GeoCoordinate coordinate)
+        {                       
+            foreach (GeoCoordinate excavatorcoordinate in _excavators.Excavators.Values)
+            {                                                    
+                if (coordinate.GetDistanceTo(excavatorcoordinate) < EXCAVATORRADIUS)
+                    return true;               
+            }                
+            return false;
         }
 
-        //     
-        
-        bool FindNearExcavator(GeoLocation point)
-        {
-            //double radius = 0.079162;
-            double radius = 45;            
-            bool result = false;
-            foreach (Point excv in _excavators.Excavators.Values)
-            {
-                GeoLocation gl = new GeoLocation();
-                gl.SetLocation(excv.X, excv.Y, 0);
-                double _hypo = hypo(gl, point);
-                ToTXT(_hypo.ToString());
-                if (_hypo < radius)
-                {
-                    result = true;
-                }                  
-            }                
-            return result;
-        }
+        #region appendix hypo    
         double hypo(GeoLocation pointA, GeoLocation pointB)
         {
             double a = Math.Abs(pointA.Longitude - pointB.Longitude);
@@ -148,7 +145,9 @@ namespace disp
             double b = Math.Abs(line.Points[0].Y - point.Latitude);
             return Math.Sqrt(a * a + b * b);
         }
+        #endregion
 
+        #region appendix toTXT
         void ToTXT(string s)
         {
             using (FileStream file = new FileStream("02.txt", FileMode.Append, FileAccess.Write, FileShare.Read))
@@ -157,8 +156,9 @@ namespace disp
                 _writer.Write("{0}\n", s);
             }
         }
+        #endregion
 
-        bool FindNearParking(GeoLocation point)
+        bool FindNearParking(GeoCoordinate point)
         {       
             bool result = false;
             foreach (Line line in _parkings.Parkings)
@@ -174,7 +174,7 @@ namespace disp
             return result;
         }
 
-        bool FindNearDepot(GeoLocation point)
+        bool FindNearDepot(GeoCoordinate point)
         {                                       
             bool result = false;
             foreach (Line line in _depots.Depots)
@@ -183,7 +183,7 @@ namespace disp
                                   new Point(line.Points[1].X, line.Points[1].Y), 
                                   new Point(line.Points[2].X, line.Points[2].Y), 
                                   new Point(line.Points[3].X, line.Points[3].Y), 
-                                  new Point(point.Latitude, point.Longitude));
+                                  new Point(point.Longitude, point.Latitude));
                 if (result)
                     return result;
             }
@@ -205,6 +205,16 @@ namespace disp
             d = Area(test, v4, v1) < 0.0 ? true : false;
             return ((a == b) && (a == c) && (a == d));
         }
+        bool SearchTruck(GeoCoordinate coordinate)
+        {                       
+            foreach(Dump truck in Dumps.Where(x => x.Tod == TypeOfDump.Dumptruck))
+            {
+                GeoCoordinate truckcoordinate = truck.Location;
+                if (coordinate.GetDistanceTo(truckcoordinate) < EXCAVATORRADIUS)
+                    return true;    
+            }   
+            return false;
+        }          
 
 
         class DepotRound
