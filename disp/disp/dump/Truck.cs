@@ -14,9 +14,7 @@ namespace disp
     {                                                    
         public Func<GeoCoordinate, bool> FindNearExcavator;
         public Func<GeoCoordinate, bool> FindNearParking;
-        public Func<GeoCoordinate, bool> FindNearDepot;
-        //public Func<GeoCoordinate, bool> IntersectGeozone;
-        //protected DumpStatus _state;
+        public Func<GeoCoordinate, bool> FindNearDepot;       
 
         public Truck(string imei)
             :base(imei)

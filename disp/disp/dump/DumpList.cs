@@ -16,31 +16,24 @@ namespace disp
 
         public List<Dump> Dumps;
         Places _places;
-        LoadingPoint _loadingpoints;
-        ParkPlaces _parkings;
+        LoadingPoint _loadingpoints;                     
 
-        public int Length { get { return Dumps.Count; } }
+        public Dump this[int index]     { get { return Dumps[index]; } }
+        public Dump this[string imei]   { get { return Dumps.Where(x => x.Imei == imei).FirstOrDefault(); } }
 
-        public Dump this[int index] { get { return Dumps[index]; } }
-
-        public Dump this[string imei] { get { return Dumps.Where(x => x.Imei == imei).FirstOrDefault(); } }
-
-        public DumpList(string fileName, Places places, LoadingPoint loadingpoints, ParkPlaces parkings)
+        public DumpList(string fileName, Places places, LoadingPoint loadingpoints)
         {
             Dumps = new List<Dump>();
             if (File.Exists(fileName))
                 FillDumpList(fileName);
             _places = places;
-            _loadingpoints = loadingpoints;
-            _parkings = parkings;            
+            _loadingpoints = loadingpoints;  
         }   
 
         void FillDumpList(string fileName)
         {
             List<Item> _items = JSONData.OpenJson(fileName);
-            bool IsLoadingPoint = true;
-            bool IsNotLoadingPoint = false;
-            //Regex regex = new Regex(@".{4}$");
+            bool IsLoadingPoint = true;         
             foreach(Item item in _items)
             {
                 switch (item.type)
@@ -49,7 +42,7 @@ namespace disp
                         AddDumptruck(item.name).AddParkNumber(item.park);
                         break;
                     case "e":
-                        AddExcavator(item.name, IsNotLoadingPoint).AddParkNumber(item.park);
+                        AddExcavator(item.name).AddParkNumber(item.park);
                         break;
                     case "el":
                         AddExcavator(item.name, IsLoadingPoint).AddParkNumber(item.park);
@@ -58,8 +51,7 @@ namespace disp
                         break;
                     default:
                         break;
-                }
-                
+                }                                               
             }
         }
 
@@ -74,10 +66,10 @@ namespace disp
                 dump.FindNearDepot = FindNearDepot;
                 return dump;
             }
-            return null;                
+            return Dumps.Where(x => x.Imei == imei && x.Tod == TypeOfDump.Dumptruck).First();
         }
 
-        Dump AddExcavator(string imei, bool isloadingpoint)
+        Dump AddExcavator(string imei, bool isloadingpoint = false)
         {
             if (!IsExist(TypeOfDump.Excavator, imei))
             {
@@ -86,7 +78,7 @@ namespace disp
                 dump.SearchTruck = SearchTruck;
                 return Dumps.Last();
             }
-            return null;                
+            return Dumps.Where(x => x.Imei == imei && x.Tod == TypeOfDump.Excavator).First();
         }   
 
         bool IsExist(TypeOfDump tod, string imei)
@@ -101,33 +93,7 @@ namespace disp
         {
             Dumps.Remove(Dumps[index]);
         }        
-
-        #region appendix hypo    
-        double hypo(GeoLocation pointA, GeoLocation pointB)
-        {
-            double a = Math.Abs(pointA.Longitude - pointB.Longitude);
-            double b = Math.Abs(pointA.Latitude - pointB.Latitude);
-            return Math.Sqrt(a * a + b * b);
-        }
-        double hypo(Line line, GeoLocation point)
-        {
-            double a = Math.Abs(line.Points[0].X - point.Longitude);
-            double b = Math.Abs(line.Points[0].Y - point.Latitude);
-            return Math.Sqrt(a * a + b * b);
-        }
-        #endregion
-
-        #region appendix toTXT
-        void ToTXT(string s)
-        {
-            using (FileStream file = new FileStream("02.txt", FileMode.Append, FileAccess.Write, FileShare.Read))
-            using (StreamWriter _writer = new StreamWriter(file, Encoding.UTF8))
-            {
-                _writer.Write("{0}\n", s);
-            }
-        }
-        #endregion
-
+        
         bool FindNearExcavator(GeoCoordinate coordinate)
         {
             foreach (GeoCoordinate excavatorcoordinate in _loadingpoints.Excavators.Values)
@@ -180,6 +146,7 @@ namespace disp
             d = Area(test, v4, v1) < 0.0 ? true : false;
             return ((a == b) && (a == c) && (a == d));
         }
+
         public static double Area(Point a, Point b, Point c)
         {
             return ((b.X - a.X) * (c.Y - a.Y) - (c.X - a.X) * (b.Y - a.Y));
@@ -196,6 +163,7 @@ namespace disp
             return false;
         }   
     }
+
     static class JSONData
     {                                                         
         static public List<Item> OpenJson(string fileName)
