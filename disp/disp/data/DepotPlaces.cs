@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 
 namespace disp
 {
-    public class DepotPlaces
+    public class Places
     {
         List<Line> _places;
-        public List<Line> Depots { get { return _places; } }
-                
-        public DepotPlaces()
+        public List<Line> Depots { get { return _places.Where(x => x.Type == "dept").ToList(); } }
+        public List<Line> Parks { get { return _places.Where(x => x.Type == "park").ToList(); } }
+
+        public Places()
         { 
             string fileName = @"C:\mok\depots.json";
             if (!File.Exists(fileName))
@@ -24,14 +25,16 @@ namespace disp
             foreach (DepotPlace tm in list)
             {
                 Line line = new Line();
-                if(tm.Type == "dept")
+                //if(tm.Type == "dept")
                 {
                     foreach (Point p in tm.Points)
                     {
                         //GEOCoordinate coord = new GEOCoordinate(p.Y, p.X);
                         //coord.TransferToUTM();
-                        line.Points.Add(new Point(p.X, p.Y));
+                        line.Points.Add(new Point(p.X, p.Y));                        
                     }
+                    line.Name = tm.Imei;
+                    line.Type = tm.Type;
                     _places.Add(line);
                 }                
             }

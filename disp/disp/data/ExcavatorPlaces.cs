@@ -9,30 +9,24 @@ using System.Threading.Tasks;
 
 namespace disp
 {
-    public class ExcavatorPlaces
+    public class LoadingPoint
     {
-        Dictionary<string, GeoCoordinate> _places;
+        Dictionary<string, GeoCoordinate> _loadingpoints;
 
-        public Dictionary<string, GeoCoordinate> Excavators { get { return _places; } }
+        public Dictionary<string, GeoCoordinate> Excavators { get { return _loadingpoints; } }
 
-        public ExcavatorPlaces()
+        public LoadingPoint()
         {             
-            _places = new Dictionary<string, GeoCoordinate>();                 
+            _loadingpoints = new Dictionary<string, GeoCoordinate>();                 
         }                   
 
-        public void AddExcavatorPlace(string imei, GeoCoordinate point)
+        public void AddLoadingPoint(string imei, GeoCoordinate point)
         {
-            if (_places.ContainsKey(imei))
-                _places[imei] = point;
+            if (_loadingpoints.ContainsKey(imei))
+                _loadingpoints[imei] = point;
             else
-                _places.Add(imei, point);
+                _loadingpoints.Add(imei, point);
         }
-    }
-    
-    public class ExcavatorPlace
-    {
-        public string Imei;
-        public List<GeoCoordinate> Points;
-    }
+    }     
 
 }

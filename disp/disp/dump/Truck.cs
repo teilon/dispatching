@@ -15,7 +15,7 @@ namespace disp
         public Func<GeoCoordinate, bool> FindNearExcavator;
         public Func<GeoCoordinate, bool> FindNearParking;
         public Func<GeoCoordinate, bool> FindNearDepot;
-        public Func<GeoCoordinate, bool> IntersectGeozone;
+        //public Func<GeoCoordinate, bool> IntersectGeozone;
         //protected DumpStatus _state;
 
         public Truck(string imei)
@@ -23,13 +23,13 @@ namespace disp
         {
             _tod = TypeOfDump.Dumptruck;
             _state = new DumpStatus(stateMachine.Dump.Truck);
-        }                                         
-
+        }
+        
         bool _firstEvent = false;
         bool _event = false; //false-load true-unload
         DateTime _starttime = default(DateTime);
         protected override string EventHandler(DumpMessage msg)
-        {                                         
+        {
             SetLocation(msg.Location);
             bool checkSpeed = msg.Location.Speed == 0;        
 

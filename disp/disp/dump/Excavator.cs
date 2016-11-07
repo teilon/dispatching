@@ -12,17 +12,16 @@ namespace disp
     {
         public Func<GeoCoordinate, bool> SearchTruck;
 
-        public bool IsDepot;
+        public bool IsLoadingPoint;
         public Excavator(string imei)
             : base(imei)
         {
             _tod = TypeOfDump.Excavator;                     
             _state = new DumpStatus(stateMachine.Dump.Excavator);
         }
-        public Excavator(string imei, bool isdepot)
-            : this(imei)
+        public Excavator(string imei, bool isloadingpoint) : this(imei)
         {
-            IsDepot = isdepot;
+            IsLoadingPoint = isloadingpoint;
         }
         bool _firstEvent = false;
         DateTime _starttime = default(DateTime);

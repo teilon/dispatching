@@ -9,9 +9,11 @@ namespace disp
 {
     public static class dbMethods
     {
+        static string targettable = "dbo.tbTrip";
+
         public static void saveExcavatorLoading(string imei, DateTime datetime)
         {
-            string table = "dbo.MSTrip";
+            string table = targettable;
             using (IDbConnection con = new SqlConnectionFactory().Create())
             {
                 long check = 20;
@@ -28,7 +30,7 @@ namespace disp
         }
         public static void saveEndExcavatorLoading(string imei, DateTime startTime, DateTime datetime)
         {
-            string table = "dbo.MSTrip";
+            string table = targettable;
             using (IDbConnection con = new SqlConnectionFactory().Create())
             {
                 con.ExecUpdate(table, new
@@ -42,7 +44,7 @@ namespace disp
         }
         public static void saveLoading(string imei, DateTime datetime)
         {
-            string table = "dbo.MSTrip";
+            string table = targettable;
             using (IDbConnection con = new SqlConnectionFactory().Create())
             {
                 long check = 20;
@@ -59,7 +61,7 @@ namespace disp
         }
         public static void saveEndLoading(string imei, DateTime startTime, DateTime datetime)
         {
-            string table = "dbo.MSTrip";
+            string table = targettable;
             using (IDbConnection con = new SqlConnectionFactory().Create())
             {
                 con.ExecUpdate(table, new
@@ -73,7 +75,7 @@ namespace disp
         }
         public static void saveUnloading(string imei, DateTime datetime)
         {
-            string table = "dbo.MSTrip";
+            string table = targettable;
             using (IDbConnection con = new SqlConnectionFactory().Create())
             {
                 long check = 20;
@@ -90,7 +92,7 @@ namespace disp
         }
         public static void saveEndUnloading(string imei, DateTime startTime, DateTime datetime)
         {
-            string table = "dbo.MSTrip";
+            string table = targettable;
             using (IDbConnection con = new SqlConnectionFactory().Create())
             {
                 con.ExecUpdate(table, new

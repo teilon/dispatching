@@ -15,48 +15,31 @@ namespace disp
         const double EXCAVATORRADIUS = 45;
 
         public List<Dump> Dumps;
-        DepotPlaces _depots;
-        ExcavatorPlaces _excavators;
+        Places _places;
+        LoadingPoint _loadingpoints;
         ParkPlaces _parkings;
 
         public int Length { get { return Dumps.Count; } }
 
-        public Dump this[int index]
-        {
-            get
-            {
-                return Dumps[index];
-            }
-        }
+        public Dump this[int index] { get { return Dumps[index]; } }
 
-        public Dump this[string imei]
-        {
-            get
-            {
-                foreach(Dump d in Dumps)
-                {
-                    if(d.Imei == imei)
-                        return d;
-                }
-                return null;
-            }
-        }   
+        public Dump this[string imei] { get { return Dumps.Where(x => x.Imei == imei).FirstOrDefault(); } }
 
-        public DumpList(string fileName, DepotPlaces depots, ExcavatorPlaces excavators, ParkPlaces parkings)
-        {               
+        public DumpList(string fileName, Places places, LoadingPoint loadingpoints, ParkPlaces parkings)
+        {
             Dumps = new List<Dump>();
-            if(File.Exists(fileName))
+            if (File.Exists(fileName))
                 FillDumpList(fileName);
-            _depots = depots;
-            _excavators = excavators;
-            _parkings = parkings;
-        }
+            _places = places;
+            _loadingpoints = loadingpoints;
+            _parkings = parkings;            
+        }   
 
         void FillDumpList(string fileName)
         {
             List<Item> _items = JSONData.OpenJson(fileName);
-            bool IsDepot = true;
-            bool IsNotDepot = false;
+            bool IsLoadingPoint = true;
+            bool IsNotLoadingPoint = false;
             //Regex regex = new Regex(@".{4}$");
             foreach(Item item in _items)
             {
@@ -66,10 +49,14 @@ namespace disp
                         AddDumptruck(item.name).AddParkNumber(item.park);
                         break;
                     case "e":
-                        AddExcavator(item.name, IsNotDepot).AddParkNumber(item.park);
+                        AddExcavator(item.name, IsNotLoadingPoint).AddParkNumber(item.park);
                         break;
-                    case "ed":
-                        AddExcavator(item.name, IsDepot).AddParkNumber(item.park);
+                    case "el":
+                        AddExcavator(item.name, IsLoadingPoint).AddParkNumber(item.park);
+                        //todo: from db get last place
+                        _loadingpoints.AddLoadingPoint(item.name, Dumps.Last().Location);
+                        break;
+                    default:
                         break;
                 }
                 
@@ -90,11 +77,11 @@ namespace disp
             return null;                
         }
 
-        Dump AddExcavator(string imei, bool isdepot)
+        Dump AddExcavator(string imei, bool isloadingpoint)
         {
             if (!IsExist(TypeOfDump.Excavator, imei))
             {
-                Dumps.Add(new Excavator(imei, isdepot));
+                Dumps.Add(new Excavator(imei, isloadingpoint));
                 Excavator dump = (Excavator)Dumps.Last();
                 dump.SearchTruck = SearchTruck;
                 return Dumps.Last();
@@ -104,33 +91,16 @@ namespace disp
 
         bool IsExist(TypeOfDump tod, string imei)
         {
-            foreach (Dump d in Dumps)
-                if (d.Tod == tod && d.Imei == imei)
-                    return true;
-            return false;
+            return (Dumps.Where(x => x.Imei == imei && x.Tod == tod)).FirstOrDefault() != null;
         }
         public bool IsExist(string imei)
-        {
-            //return (Dumps.Where(x => x.Imei == imei)) != null;
-            foreach (Dump d in Dumps)
-                if (d.Imei == imei)
-                    return true;
-            return false;
+        {   
+            return (Dumps.Where(x => x.Imei == imei)).FirstOrDefault() != null;
         }
         public void RemoveDump(int index)
         {
             Dumps.Remove(Dumps[index]);
-        }      
-
-        bool FindNearExcavator(GeoCoordinate coordinate)
-        {                       
-            foreach (GeoCoordinate excavatorcoordinate in _excavators.Excavators.Values)
-            {                                                    
-                if (coordinate.GetDistanceTo(excavatorcoordinate) < EXCAVATORRADIUS)
-                    return true;               
-            }                
-            return false;
-        }
+        }        
 
         #region appendix hypo    
         double hypo(GeoLocation pointA, GeoLocation pointB)
@@ -158,26 +128,20 @@ namespace disp
         }
         #endregion
 
+        bool FindNearExcavator(GeoCoordinate coordinate)
+        {
+            foreach (GeoCoordinate excavatorcoordinate in _loadingpoints.Excavators.Values)
+            {
+                if (coordinate.GetDistanceTo(excavatorcoordinate) < EXCAVATORRADIUS)
+                    return true;
+            }
+            return false;
+        }
+
         bool FindNearParking(GeoCoordinate point)
         {       
             bool result = false;
-            foreach (Line line in _parkings.Parkings)
-            {   
-                result = IsInside(new Point(line.Points[0].X, line.Points[0].Y), 
-                                  new Point(line.Points[1].X, line.Points[1].Y), 
-                                  new Point(line.Points[2].X, line.Points[2].Y), 
-                                  new Point(line.Points[3].X, line.Points[3].Y), 
-                                  new Point(point.Latitude, point.Longitude));
-                if (result)
-                    return result;
-            }
-            return result;
-        }
-
-        bool FindNearDepot(GeoCoordinate point)
-        {                                       
-            bool result = false;
-            foreach (Line line in _depots.Depots)
+            foreach (Line line in _places.Parks)
             {   
                 result = IsInside(new Point(line.Points[0].X, line.Points[0].Y), 
                                   new Point(line.Points[1].X, line.Points[1].Y), 
@@ -190,10 +154,21 @@ namespace disp
             return result;
         }
 
-        public static double Area(Point a, Point b, Point c)
-        {
-            return ((b.X - a.X) * (c.Y - a.Y) - (c.X - a.X) * (b.Y - a.Y));
-        }
+        bool FindNearDepot(GeoCoordinate point)
+        {                                       
+            bool result = false;
+            foreach (Line line in _places.Depots)
+            {   
+                result = IsInside(new Point(line.Points[0].X, line.Points[0].Y), 
+                                  new Point(line.Points[1].X, line.Points[1].Y), 
+                                  new Point(line.Points[2].X, line.Points[2].Y), 
+                                  new Point(line.Points[3].X, line.Points[3].Y), 
+                                  new Point(point.Longitude, point.Latitude));
+                if (result)
+                    return result;
+            }
+            return result;
+        }        
 
         public Boolean IsInside(Point v1, Point v2, Point v3, Point v4, Point test)
         {
@@ -205,6 +180,11 @@ namespace disp
             d = Area(test, v4, v1) < 0.0 ? true : false;
             return ((a == b) && (a == c) && (a == d));
         }
+        public static double Area(Point a, Point b, Point c)
+        {
+            return ((b.X - a.X) * (c.Y - a.Y) - (c.X - a.X) * (b.Y - a.Y));
+        }
+
         bool SearchTruck(GeoCoordinate coordinate)
         {                       
             foreach(Dump truck in Dumps.Where(x => x.Tod == TypeOfDump.Dumptruck))
@@ -214,23 +194,7 @@ namespace disp
                     return true;    
             }   
             return false;
-        }          
-
-
-        class DepotRound
-        {
-            double Latitude;
-            double Longitude;
-            double Altitude;
-            double Radius;
-            public DepotRound(double latitude, double longitude, double altitude, double radius)
-            {
-                Latitude = latitude;
-                Longitude = longitude;
-                Altitude = altitude;
-                Radius = radius;
-            }
-        }
+        }   
     }
     static class JSONData
     {                                                         

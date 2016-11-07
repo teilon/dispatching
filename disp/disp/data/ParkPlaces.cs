@@ -27,9 +27,9 @@ namespace disp
                 Line line = new Line();
                 foreach (Point p in tm.Points)
                 {
-                    GEOCoordinate coord = new GEOCoordinate(p.Y, p.X);
-                    coord.TransferToUTM();
-                    line.Points.Add(new Point(coord.X, coord.Y));
+                    //GEOCoordinate coord = new GEOCoordinate(p.Y, p.X);
+                    //coord.TransferToUTM();
+                    line.Points.Add(new Point(p.X, p.Y));
                 }
                 _parkings.Add(line);
             }

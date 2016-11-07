@@ -13,8 +13,8 @@ namespace disp
     public class Enterprise
     {
         public DumpList Dumps;
-        public DepotPlaces DepotPlaces;
-        public ExcavatorPlaces ExcavatorPlaces;
+        public Places DepotPlaces;
+        public LoadingPoint ExcavatorPlaces;
         public ParkPlaces ParkPlaces;
 
         public Enterprise()
@@ -23,14 +23,14 @@ namespace disp
         }
         public Enterprise(string fileName)
         {
-            DepotPlaces = new DepotPlaces();
-            ExcavatorPlaces = new ExcavatorPlaces();
+            DepotPlaces = new Places();
+            ExcavatorPlaces = new LoadingPoint();
             ParkPlaces = new ParkPlaces();
-            Dumps = new DumpList(fileName, DepotPlaces, ExcavatorPlaces, ParkPlaces); 
-        }                   
+            Dumps = new DumpList(fileName, DepotPlaces, ExcavatorPlaces, ParkPlaces);            
+        }
 
         public string AddMessage(string imei, double latitude, double longitude, DateTime datetime, int speedKPH)
-        {
+        {   
             DumpMessage msg = new DumpMessage()
             {
                 Imei = imei,
@@ -39,26 +39,26 @@ namespace disp
                 State = "",         
             };
 
-            /*
-            TransferCoordinate _tc = new TransferCoordinate(msg.Location.Latitude, msg.Location.Longitude);
-            msg.Location.Latitude = _tc.X;
-            msg.Location.Longitude = _tc.Y;
-            */
+            bool truck = false;
+            bool excav = false;
 
-            //string _imei = new Regex(@".{4}$").Match(msg.Imei).Value;
-            string _imei = msg.Imei;                                                
-            if (Dumps.IsExist(_imei))//todo: PARK CHANGE
+            string _imei = msg.Imei;
+            string currentstate = "NH";
+            if (Dumps.IsExist(_imei))
             {
-                if (Dumps[_imei].Tod == TypeOfDump.Excavator)
+                truck = Dumps[_imei].Tod == TypeOfDump.Dumptruck;
+                excav = Dumps[_imei].Tod == TypeOfDump.Excavator;                     
+
+                if (excav)
                     if (_imei == "354868053063915" ||         //134
                         _imei == "354868056852009" ||         //157
                         _imei == "354868054433877" ||         //125
-                        _imei == "354868053058196" ||         //13
+                        _imei == "354868053043107" ||         //13
                         _imei == "354868056817085" ||         //70
                         _imei == "354868052961648" ||         //39
                         _imei == "354868053063956")           //66
                         ExcavatorPlaces.AddExcavatorPlace(_imei, msg.Location);
-                string currentstate = Dumps[_imei].AddMessage(msg);
+                currentstate = Dumps[_imei].AddMessage(msg);
                 /*
                 if (Dumps[_imei].Tod == TypeOfDump.Dumptruck && currentstate == "LL")
                 {                                                                  

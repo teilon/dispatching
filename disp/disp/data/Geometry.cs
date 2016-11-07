@@ -22,6 +22,8 @@ namespace disp
     }
     public class Line
     {
+        public string Name;
+        public string Type;
         List<Point> _points;
         public List<Point> Points { get { return _points; } }
         public Line()
