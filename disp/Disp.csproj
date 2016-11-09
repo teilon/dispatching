@@ -75,10 +75,12 @@
     <Compile Include="disp\dump\Excavator.cs" />
     <Compile Include="disp\dump\Dump.cs" />
     <Compile Include="disp\data\GeoLocation.cs" />
-    <Compile Include="disp\dump\TypeOfDump.cs" />
+    <Compile Include="disp\enumerate\TypeOfEvents.cs" />
+    <Compile Include="disp\enumerate\TypeOfDump.cs" />
     <Compile Include="disp\Enterprise.cs" />
     <Compile Include="disp\Utils.cs" />
     <Compile Include="db[dapper]\DynamicQuery.cs" />
+    <Compile Include="disp\enumerate\TypeOfZone.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="db[dapper]\QueryHelper.cs" />

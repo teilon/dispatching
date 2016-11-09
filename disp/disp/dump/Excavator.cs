@@ -23,10 +23,21 @@ namespace disp
         {
             IsLoadingPoint = isloadingpoint;
         }
+
+        
+        protected override TypeOfZone EventHandler(DumpMessage msg)
+        {
+            SetLocation(msg.Location);
+            if (SearchTruck(Location)) 
+                return TypeOfZone.OnTruckZone;
+            return TypeOfZone.None;
+        }
+        /*
         bool _firstEvent = false;
         DateTime _starttime = default(DateTime);
-        protected override string EventHandler(DumpMessage msg)
-        {                                                                                                 
+        protected override TypeOfZone EventHandler(DumpMessage msg)
+        {    
+                                                                                                         
             SetLocation(msg.Location);
             bool checkSpeed = msg.Location.Speed == 0;
 
@@ -60,7 +71,9 @@ namespace disp
             }
 
             msg.State = _state.Current;
+            
             return msg.State;
         }   
+        */
     }
 }

@@ -45,14 +45,16 @@ namespace disp
                         AddExcavator(item.name).AddParkNumber(item.park);
                         break;
                     case "el":
-                        AddExcavator(item.name, IsLoadingPoint).AddParkNumber(item.park);
-                        //todo: from db get last place
-                        _loadingpoints.AddLoadingPoint(item.name, Dumps.Last().Location);
+                        AddExcavator(item.name, IsLoadingPoint).AddParkNumber(item.park);                                  
                         break;
                     default:
                         break;
                 }                                               
             }
+        }
+        public void AddLoadingPoint(string imei, GeoCoordinate point)
+        {
+            _loadingpoints.AddLoadingPoint(imei, point);
         }
 
         Dump AddDumptruck(string imei)
@@ -98,6 +100,8 @@ namespace disp
         {
             foreach (GeoCoordinate excavatorcoordinate in _loadingpoints.Excavators.Values)
             {
+                if (excavatorcoordinate == null)
+                    return false;
                 if (coordinate.GetDistanceTo(excavatorcoordinate) < EXCAVATORRADIUS)
                     return true;
             }

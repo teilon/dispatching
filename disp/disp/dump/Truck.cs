@@ -22,7 +22,24 @@ namespace disp
             _tod = TypeOfDump.Dumptruck;
             _state = new DumpStatus(stateMachine.Dump.Truck);
         }
-        
+
+        protected override TypeOfZone EventHandler(DumpMessage msg)
+        {
+            SetLocation(msg.Location);
+            if (FindNearExcavator(Location))
+            {
+                return TypeOfZone.OnLoadingPoint;
+            }else if (FindNearDepot(Location))
+            {
+                return TypeOfZone.OnStoragePoint;
+            }
+            else if (FindNearParking(Location))
+            {
+                return TypeOfZone.OnShiftChangePoint;
+            }
+            return TypeOfZone.None;   
+        }
+        /*
         bool _firstEvent = false;
         bool _event = false; //false-load true-unload
         DateTime _starttime = default(DateTime);
@@ -78,6 +95,7 @@ namespace disp
             }                                                                        
             msg.State = _state.Current;
             return msg.State;
-        }         
+        }     
+        */
     }
 }

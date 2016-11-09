@@ -23,7 +23,8 @@ namespace disp
         public string ParkNumber { get { return _parknumber; } }
         public GeoCoordinate Location { get { return _location; } }
         public TypeOfDump Tod { get { return _tod; } }          
-        
+        public DumpStatus State { get { return _state; } }
+
         protected Dump(string imei)
         {
             _imei = imei;           
@@ -57,11 +58,11 @@ namespace disp
             _parknumber = parknumber;
         }
 
-        public string AddMessage(DumpMessage msg)
+        public TypeOfZone AddMessage(DumpMessage msg)
         {              
             return EventHandler(msg);
         }    
 
-        protected abstract string EventHandler(DumpMessage msg);
+        protected abstract TypeOfZone EventHandler(DumpMessage msg);
     }
 }
