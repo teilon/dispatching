@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -47,7 +48,7 @@ namespace disp
             string table = targettable;
             using (IDbConnection con = new SqlConnectionFactory().Create())
             {
-                long check = 20;
+                long check = 20;               
 
                 check = con.ExecInsert(table, new
                 {
@@ -57,6 +58,8 @@ namespace disp
                     weight_kg = 130,
                     startTime = datetime
                 });
+                
+                SaveToTXT(string.Format("result: {0}\n", check));
             }
         }
         public static void saveEndLoading(string imei, DateTime startTime, DateTime datetime)
@@ -88,6 +91,8 @@ namespace disp
                     weight_kg = 130,
                     startTime = datetime
                 });
+
+                SaveToTXT(string.Format("result: {0}\n", check));
             }
         }
         public static void saveEndUnloading(string imei, DateTime startTime, DateTime datetime)
@@ -102,6 +107,15 @@ namespace disp
                     endTime = datetime
                 });
 
+            }
+        }
+        public static void SaveToTXT(string input)
+        {
+            string fileName = string.Format(@"C:\mok\log_{0}.txt", DateTime.Now.Year + DateTime.Now.DayOfYear);
+            using (FileStream file = new FileStream(fileName, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
+            using (StreamWriter _writer = new StreamWriter(file, Encoding.UTF8))
+            {
+                _writer.Write(input);
             }
         }
     }

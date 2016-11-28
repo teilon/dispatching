@@ -27,6 +27,11 @@ namespace disp
             else
                 _loadingpoints.Add(imei, point);
         }
+        public void UpdateLoadingPoint(string imei, GeoCoordinate point)
+        {
+            if (_loadingpoints.ContainsKey(imei))
+                _loadingpoints[imei] = point;
+        }
     }     
 
 }

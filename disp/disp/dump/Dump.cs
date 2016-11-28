@@ -24,6 +24,7 @@ namespace disp
         public GeoCoordinate Location { get { return _location; } }
         public TypeOfDump Tod { get { return _tod; } }          
         public DumpStatus State { get { return _state; } }
+        public string CurrentState { get { return _state.Current; } }
 
         protected Dump(string imei)
         {
@@ -64,5 +65,14 @@ namespace disp
         }    
 
         protected abstract TypeOfZone EventHandler(DumpMessage msg);
+
+        public bool IsDumptruck()
+        {
+            return _tod == TypeOfDump.Dumptruck;
+        }
+        public bool IsExcavator()
+        {
+            return _tod == TypeOfDump.Excavator;
+        }
     }
 }
