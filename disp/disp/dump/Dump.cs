@@ -12,23 +12,23 @@ namespace disp
     public abstract class Dump
     {
         #region fields
-        protected string _imei;
+        protected int _id;
         protected string _parknumber;
         protected GeoCoordinate _location;
         protected TypeOfDump _tod;           
         protected DumpStatus _state;
         #endregion
 
-        public string Imei { get { return _imei; } }
+        public int Id { get { return _id; } }
         public string ParkNumber { get { return _parknumber; } }
         public GeoCoordinate Location { get { return _location; } }
         public TypeOfDump Tod { get { return _tod; } }          
         public DumpStatus State { get { return _state; } }
         public string CurrentState { get { return _state.Current; } }
 
-        protected Dump(string imei)
+        protected Dump(int id)
         {
-            _imei = imei;           
+            _id = id;     
             _location = new GeoCoordinate();
             SetLocation(0, 0);
         }
@@ -37,15 +37,7 @@ namespace disp
         {
             _location = coordinate;
         }
-
-        /// <summary>
-        /// Set current location
-        /// </summary>
-        /// <param name="latitude">Gets or sets the latitude of the GeoCoordinate.</param>
-        /// <param name="longitude">Gets or sets the longitude of the GeoCoordinate.</param>
-        /// <param name="altitude">Gets the altitude of the GeoCoordinate, in meters.</param>
-        /// <param name="speed">Gets or sets the speed in meters per second.</param>
-        /// <param name="course">Gets or sets the heading in degrees, relative to true north.</param>
+                
         public void SetLocation(double latitude, double longitude, double altitude = 0, double speed = 0, double course = 0)
         {
             _location.Latitude = latitude;
@@ -70,6 +62,7 @@ namespace disp
         {
             return _tod == TypeOfDump.Dumptruck;
         }
+
         public bool IsExcavator()
         {
             return _tod == TypeOfDump.Excavator;

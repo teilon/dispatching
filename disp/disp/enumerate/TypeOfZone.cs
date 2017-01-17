@@ -16,6 +16,6 @@ namespace disp
         OnShiftChangePoint,   
         OnTruckZone,
         OnGarage,
-        None
+        None          
     }
 }

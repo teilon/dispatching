@@ -37,17 +37,6 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BaseGraph">
-      <HintPath>..\..\..\temp\LibGraphMSSQL\BaseGraph\BaseGraph\bin\Debug\BaseGraph.dll</HintPath>
-    </Reference>
-    <Reference Include="Dapper, Version=1.50.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Dapper.1.50.2\lib\net45\Dapper.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="stateMachine, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\stateMachine\stateMachine\bin\Debug\stateMachine.dll</HintPath>
@@ -66,29 +55,20 @@
     <Compile Include="disp\data\DepotPlaces.cs" />
     <Compile Include="disp\data\ExcavatorPlaces.cs" />
     <Compile Include="disp\data\Geometry.cs" />
-    <Compile Include="disp\data\TransferToUTM.cs" />
-    <Compile Include="disp\db\dbMethods.cs" />
-    <Compile Include="disp\dump\DumpList.cs" />
-    <Compile Include="disp\data\ParkPlaces.cs" />
-    <Compile Include="disp\event\ActionLine.cs" />
+    <Compile Include="disp\DumpList\DumpList.cs" />
+    <Compile Include="disp\DumpList\Conditions.cs" />
     <Compile Include="disp\dump\Truck.cs" />
     <Compile Include="disp\dump\Excavator.cs" />
     <Compile Include="disp\dump\Dump.cs" />
-    <Compile Include="disp\data\GeoLocation.cs" />
-    <Compile Include="disp\enumerate\TypeOfEvents.cs" />
     <Compile Include="disp\enumerate\TypeOfDump.cs" />
     <Compile Include="disp\Enterprise.cs" />
-    <Compile Include="disp\Utils.cs" />
-    <Compile Include="db[dapper]\DynamicQuery.cs" />
     <Compile Include="disp\enumerate\TypeOfZone.cs" />
+    <Compile Include="disp\Logic.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="db[dapper]\QueryHelper.cs" />
-    <Compile Include="db[dapper]\SqlConnectionFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

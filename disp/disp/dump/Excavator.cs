@@ -13,17 +13,17 @@ namespace disp
         public Func<GeoCoordinate, bool> SearchTruck;
 
         public bool IsLoadingPoint;
-        public Excavator(string imei)
-            : base(imei)
+        public Excavator(int id)
+            : base(id)
         {
             _tod = TypeOfDump.Excavator;                     
             _state = new DumpStatus(stateMachine.Dump.Excavator);
         }
-        public Excavator(string imei, bool isloadingpoint) : this(imei)
+        public Excavator(int id, bool isloadingpoint) 
+            : this(id)
         {
             IsLoadingPoint = isloadingpoint;
-        }
-
+        }            
         
         protected override TypeOfZone EventHandler(DumpMessage msg)
         {
@@ -31,49 +31,6 @@ namespace disp
             if (SearchTruck(Location)) 
                 return TypeOfZone.OnTruckZone;
             return TypeOfZone.None;
-        }
-        /*
-        bool _firstEvent = false;
-        DateTime _starttime = default(DateTime);
-        protected override TypeOfZone EventHandler(DumpMessage msg)
-        {    
-                                                                                                         
-            SetLocation(msg.Location);
-            bool checkSpeed = msg.Location.Speed == 0;
-
-            if (SearchTruck(Location))
-            {
-                _state.ToLoading();
-                if (!_firstEvent && _state.Current == "LL")
-                {
-                    _starttime = msg.Datetime;
-                    dbMethods.saveExcavatorLoading(this.Imei, _starttime);
-                    _firstEvent = true;  
-                }
-            }
-            else if (!checkSpeed)
-            {
-                _state.OnRoad();
-                if (_firstEvent)
-                {
-                    dbMethods.saveEndExcavatorLoading(this.Imei, _starttime, msg.Datetime);      
-                    _firstEvent = false;
-                }
-            }
-            else
-            {
-                _state.Stop();
-                if (_firstEvent)
-                {
-                    dbMethods.saveEndExcavatorLoading(this.Imei, _starttime, msg.Datetime);      
-                    _firstEvent = false;
-                }
-            }
-
-            msg.State = _state.Current;
-            
-            return msg.State;
-        }   
-        */
+        }         
     }
 }
